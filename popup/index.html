@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>매크로 탐지 시스템</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="card">
+      <h1>🛡️ 매크로 탐지 시스템</h1>
+      <p class="subtitle">실시간 사용자 행동 패턴 분석</p>
+      
+      <!-- 위험도 표시 -->
+      <div class="risk-display safe" id="riskDisplay">
+        <div class="risk-percentage" id="riskPercentage">3%</div>
+        <div class="risk-label" id="riskLabel">안전</div>
+        <div class="risk-desc" id="riskDesc">정상적인 사용자 패턴</div>
+      </div>
+      
+      <!-- 진행 바 -->
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 3%"></div>
+      </div>
+      
+      <!-- 상태 정보 -->
+      <div class="status-grid">
+        <div class="status-item">
+          <div class="status-value" id="eventsCount">247</div>
+          <div class="status-label">수집된 이벤트</div>
+        </div>
+        <div class="status-item">
+          <div class="status-value" id="analysisTime">1.2s</div>
+          <div class="status-label">분석 시간</div>
+        </div>
+        <div class="status-item">
+          <div class="status-value" id="avgSpeed">187ms</div>
+          <div class="status-label">평균 입력속도</div>
+        </div>
+        <div class="status-item">
+          <div class="status-value" id="patternScore">0.92</div>
+          <div class="status-label">패턴 다양성</div>
+        </div>
+      </div>
+      
+      <!-- 실시간 알림 -->
+      <div id="alertContainer">
+        <!-- 동적으로 알림이 표시됩니다 -->
+      </div>
+      
+      <div class="sep"></div>
+      
+      <!-- 컨트롤 -->
+      <div class="controls">
+        <div class="control-row">
+          <button class="btn btn-primary" id="toggleDetection">감지 일시정지</button>
+          <button class="btn btn-success" id="exportReport">리포트 내보내기</button>
+        </div>
+        <div class="control-row">
+          <button class="btn btn-danger" id="resetData">데이터 초기화</button>
+          <button class="btn btn-primary" id="settings">설정</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

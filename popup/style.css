@@ -1,0 +1,264 @@
+/* 매크로 탐지 대시보드 CSS */
+
+:root{
+  --bg1:#f6f3ff;--bg2:#e9f0ff;--card:#ffffffaa;--border:#e8e8ff;
+  --text:#2b2b2f;--sub:#6b6b78;--safe:#00a883;--warning:#ff9500;
+  --danger:#ff6b6b;--primary:#4b3cc4;
+}
+
+* {
+  box-sizing:border-box;
+}
+
+html, body {
+  margin:0; 
+  padding:0;
+  width:400px; 
+  min-height:320px; 
+  overflow-x:hidden;
+}
+
+body {
+  font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+  color:var(--text);
+  background:linear-gradient(180deg, var(--bg1), #ffffff);
+  padding:16px;
+}
+
+.card {
+  width:100%;
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+}
+
+h1 {
+  margin:0 0 8px;
+  font-size:18px;
+  font-weight:800;
+  color:var(--primary);
+}
+
+.subtitle {
+  margin:0 0 16px;
+  color:var(--sub);
+  font-size:12px;
+  line-height:1.4;
+}
+
+/* 위험도 표시 */
+.risk-display {
+  text-align:center;
+  margin:16px 0;
+}
+
+.risk-percentage {
+  font-size:36px;
+  font-weight:900;
+  margin:8px 0;
+  background:linear-gradient(135deg, var(--primary), #6c5ce7);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  color:transparent;
+}
+
+.risk-label {
+  font-size:14px;
+  font-weight:700;
+  margin:4px 0;
+}
+
+.risk-desc {
+  font-size:11px;
+  color:var(--sub);
+}
+
+/* 위험 레벨별 색상 - Chrome 확장 프로그램용 */
+.safe {
+  color:var(--safe);
+} 
+
+.safe .risk-percentage {
+  background:linear-gradient(135deg, var(--safe), #00c896);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+
+.warning {
+  color:var(--warning);
+}
+
+.warning .risk-percentage {
+  background:linear-gradient(135deg, var(--warning), #ffb347);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+
+.danger {
+  color:var(--danger);
+}
+
+.danger .risk-percentage {
+  background:linear-gradient(135deg, var(--danger), #ff8a8a);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+
+/* 진행 바 */
+.progress-bar {
+  width:100%;
+  height:6px;
+  background:#f0f0f0;
+  border-radius:3px;
+  margin:12px 0;
+  overflow:hidden;
+}
+
+.progress-fill {
+  height:100%;
+  border-radius:3px;
+  transition:all 0.3s ease;
+  background:linear-gradient(90deg, var(--safe), var(--warning), var(--danger));
+}
+
+/* 상태 정보 */
+.status-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:16px 0;
+}
+
+.status-item {
+  background:rgba(255,255,255,0.6);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px;
+  text-align:center;
+}
+
+.status-value {
+  font-size:16px;
+  font-weight:800;
+  color:var(--primary);
+}
+
+.status-label {
+  font-size:10px;
+  color:var(--sub);
+  margin-top:2px;
+}
+
+/* 컨트롤 버튼 */
+.controls {
+  margin-top:16px;
+}
+
+.btn {
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:600;
+  padding:8px 12px;
+  border-radius:6px;
+  color:#fff;
+  margin:2px;
+  flex:1;
+  transition:all 0.2s ease;
+}
+
+.btn:hover {
+  transform:translateY(-1px);
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+  background:var(--primary);
+}
+
+.btn-success {
+  background:var(--safe);
+}
+
+.btn-danger {
+  background:var(--danger);
+}
+
+.control-row {
+  display:flex;
+  gap:4px;
+  margin:4px 0;
+}
+
+.sep {
+  height:1px;
+  background:var(--border);
+  margin:12px 0;
+}
+
+/* 실시간 알림 */
+.alert {
+  padding:8px;
+  border-radius:6px;
+  margin:8px 0;
+  font-size:11px;
+  font-weight:600;
+  animation:slideIn 0.3s ease-out;
+}
+
+.alert-danger {
+  background:#ffe6e6;
+  color:var(--danger);
+  border:1px solid #ffcccc;
+}
+
+.alert-warning {
+  background:#fff3e0;
+  color:var(--warning);
+  border:1px solid #ffe0b3;
+}
+
+.alert-success {
+  background:#e8f5e8;
+  color:var(--safe);
+  border:1px solid #c3e6c3;
+}
+
+@keyframes slideIn {
+  from {
+    opacity:0;
+    transform:translateY(-10px);
+  }
+  to {
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width:4px;
+}
+
+::-webkit-scrollbar-track {
+  background:var(--bg2);
+}
+
+::-webkit-scrollbar-thumb {
+  background:var(--primary);
+  border-radius:2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:#3d2c9d;
+}
