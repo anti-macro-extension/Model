@@ -3,7 +3,7 @@
   "name": "매크로 탐지 시스템",
   "version": "1.0.0",
   "description": "실시간 키보드/마우스 패턴 분석으로 매크로 사용을 탐지합니다",
-  
+
   "permissions": [
     "activeTab",
     "storage",
@@ -11,37 +11,47 @@
     "downloads",
     "scripting"
   ],
-  
+
   "host_permissions": [
     "http://*/*",
     "https://*/*"
   ],
-  
+
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
-  
+
   "action": {
     "default_popup": "popup/index.html",
     "default_title": "매크로 탐지 대시보드"
   },
-  
+
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["models/keyboard_macro_detector_model.js", 
-             "realtime_keyboard_macro.js",
-             "keyboard.js",
-             "mouse.js"
-                ],
+      "matches": ["<all_urls>"],
+      "js": ["libs/ort.min.js"],
       "run_at": "document_start"
-    }
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "realtime_mouse_macro.js",
+        "realtime_keyboard_macro.js",
+        "keyboard.js",
+        "mouse.js"
+      ],
+      "run_at": "document_idle"
+    } 
   ],
-  
+
   "web_accessible_resources": [
     {
-      "resources": ["popup/*"],
+      "resources": [
+        "libs/*.wasm",
+        "models/*.onnx",
+        "popup/*"
+      ],
       "matches": ["<all_urls>"]
     }
   ]
