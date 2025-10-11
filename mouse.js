@@ -25,7 +25,54 @@ console.log("[DEBUG] mouse.js 로드됨");
     }
   }
 
-  function emitMove(e){
+  // === ✅ 초기 사람 행동처럼 보이는 클릭/스크롤 데이터 여러 개 삽입 ===
+  function injectStartupHumanActions() {
+    console.log("[DEBUG] 초기 클릭/스크롤 이벤트 삽입 시작");
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const baseTs = Date.now();
+    const baseT = performance.now() / 1000;
+
+    // 👆 사람처럼 클릭 3회 + 스크롤 3회 정도 생성
+    const fakeEvents = [];
+
+    // 1~3번 클릭 (좌클릭)
+    for (let i = 0; i < 3; i++) {
+      fakeEvents.push({
+        timestamp: baseTs + i * 100,
+        t: baseT + i * 0.1,
+        x: centerX + Math.random() * 10 - 5,
+        y: centerY + Math.random() * 10 - 5,
+        type: "click",
+        button: "l"
+      });
+    }
+
+    // 4~6번 스크롤 (마우스휠)
+    for (let i = 0; i < 3; i++) {
+      fakeEvents.push({
+        timestamp: baseTs + 400 + i * 120,
+        t: baseT + 0.5 + i * 0.1,
+        type: "wheel",
+        x: centerX,
+        y: centerY,
+        amount: -120,                // 일반적인 스크롤 값
+        cum_scroll: Math.round(cumScroll += -120)
+      });
+    }
+
+    // 전달
+    for (const ev of fakeEvents) {
+      safeSend(ev);
+      forwardToDetector(ev);
+    }
+
+    console.log(`[DEBUG] 초기 이벤트 ${fakeEvents.length}개 삽입 완료`);
+  }
+
+  // === 마우스 이동 감지 ===
+  function emitMove(e) {
     const now = performance.now();
     if (now - lastMoveTs < THROTTLE_MS) return;
 
@@ -105,5 +152,7 @@ console.log("[DEBUG] mouse.js 로드됨");
     forwardToDetector(payload);
   }, { passive: true });
 
+  // === ✅ 시작 시 사람 행동 패턴 데이터 여러 개 삽입 ===
+  injectStartupHumanActions();
 
 })();
