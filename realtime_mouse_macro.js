@@ -1,8 +1,8 @@
-// === realtime_mouse_macro.js ===
+// === realtime_mouse_macro_fixed.js ===
 // 🧠 마우스 매크로 실시간 탐지 (속도 + 가속도 기반 Transformer 모델)
 // 모델: mouse_transformer_speed_fixed.onnx
 
-console.log("[DEBUG] realtime_mouse_macro.js 로드됨 ✅");
+console.log("[DEBUG] realtime_mouse_macro_fixed.js 로드됨 ✅");
 console.log("ort =", window.ort);
 
 (async () => {
@@ -19,9 +19,6 @@ console.log("ort =", window.ort);
 
   let session = null;
   let modelLoading = false;
-  let lastSpeed = 0;
-  let lastTs = 0;
-  let lastX = null, lastY = null;
 
   // ==============================
   // ORT 준비 (wasm 경로 설정)
@@ -86,8 +83,14 @@ console.log("ort =", window.ort);
   window.realtimeMouseDetector = {
     addMouseEvent(event) {
       buffer.push(event);
-      if (buffer.length > SEQ_LEN) buffer.shift();
-      analyzeMouseBuffer([...buffer]);
+      if (buffer.length > SEQ_LEN) buffer.shift(); // 최신 200개 유지
+
+      // 정확히 200개 쌓인 순간부터 추론
+      if (buffer.length === SEQ_LEN) {
+        analyzeMouseBuffer([...buffer]);
+      } else {
+        console.log(`[DEBUG] 이벤트 수: ${buffer.length}/200 (대기 중)`);
+      }
     }
   };
 
@@ -135,7 +138,7 @@ console.log("ort =", window.ort);
   }
 
   // ==============================
-  // Padding
+  // Padding (학습 대비용)
   // ==============================
   function padSequence(features) {
     if (features.length > SEQ_LEN) {
@@ -159,6 +162,13 @@ console.log("ort =", window.ort);
 
       const features = extractMouseFeatures(events);
       const padded = padSequence(features);
+
+      // 모든 값이 0이면 추론 스킵 (초기 상태 방지)
+      const allZero = padded.flat().every(v => v === 0);
+      if (allZero) {
+        console.log("[DEBUG] 초기 입력(0값) → 예측 스킵");
+        return;
+      }
 
       const inputTensor = new window.ort.Tensor(
         "float32",
