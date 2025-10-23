@@ -121,55 +121,6 @@ console.log("[DEBUG] realtime_mouse_macro.js 로드됨 ✅");
     }
   };
 
-  // === 특징 벡터 변환 ===
-  function extractMouseFeatures(events) {
-    return events.map(ev => {
-      let ecode = 0;
-      if (ev.type === "move") ecode = 0;
-      else if (["click", "up", "down"].includes(ev.type)) ecode = 1;
-      else if (ev.type === "wheel") ecode = 2;
-
-      const normX = (ev.x || 0) / window.innerWidth;
-      const normY = (ev.y || 0) / window.innerHeight;
-
-      return [ecode, normX, normY];
-    });
-  }
-
-  // === padding/trim ===
-  function padSequence(features, seqLen = SEQ_LEN, featureDim = FEATURE_DIM) {
-    if (features.length > seqLen) {
-      return features.slice(-seqLen);
-    }
-    while (features.length < seqLen) {
-      features.unshift(new Array(featureDim).fill(0));
-    }
-    return features;
-  }
-
-  // ✅ 추가: 패턴 다양성 계산
-  function calculatePatternDiversity(events) {
-    if (events.length < 5) return { diversity: 100, isRepetitive: false };
-    
-    const movements = [];
-    for (let i = 1; i < events.length; i++) {
-      const dx = events[i].x - events[i-1].x;
-      const dy = events[i].y - events[i-1].y;
-      const dist = Math.hypot(dx, dy);
-      movements.push(dist);
-    }
-    
-    // 표준편차 계산
-    const mean = movements.reduce((a, b) => a + b, 0) / movements.length;
-    const variance = movements.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / movements.length;
-    const std = Math.sqrt(variance);
-    
-    return {
-      diversity: std,
-      isRepetitive: std < 5  // 5px 이하 변동 = 반복 패턴
-    };
-  }
-
   // ✅ 개선된 분석 함수
   async function analyzeMouseBuffer(events) {
     try {
@@ -224,6 +175,13 @@ console.log("[DEBUG] realtime_mouse_macro.js 로드됨 ✅");
       
       console.log(`🎯 [MOUSE] 평균 확률: ${(avgConfidence * 100).toFixed(1)}% | 패턴 다양성: ${pattern.diversity.toFixed(1)}px`);
 
+      // ✅ 75% 이상이면 페이지 차단
+      if (avgConfidence >= CONFIG.BLOCK_THRESHOLD) {
+        console.error(`🚫 [MOUSE] 매크로 감지됨 - 페이지 차단 실행 (${(avgConfidence * 100).toFixed(1)}%)`);
+        blockPage404(avgConfidence);
+        return;
+      }
+
       // 7) 최종 판정
       const isMacro = allAboveThreshold && 
                       avgConfidence >= CONFIG.AVG_THRESHOLD &&
@@ -268,6 +226,37 @@ console.log("[DEBUG] realtime_mouse_macro.js 로드됨 ✅");
     } catch (err) {
       console.error("❌ [MOUSE-ML] 분석 실패:", err);
     }
+  }
+
+  // ✅ 404 차단 함수
+  function blockPage404(confidence) {
+    document.documentElement.innerHTML = `
+      <head>
+        <title>404 Not Found</title>
+        <style>
+          body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: monospace;
+            text-align: center;
+          }
+          h1 { font-size: 3em; color: #ff5555; margin: 0; }
+          p { font-size: 1.2em; color: #aaa; margin: 10px 0; }
+        </style>
+      </head>
+      <body>
+        <h1>404 Not Found</h1>
+        <p>Access denied. Macro-like behavior detected (${(confidence * 100).toFixed(1)}%).</p>
+        <p>Request blocked by Real-Time Macro Detector.</p>
+      </body>
+    `;
+    // 네트워크/스크립트 완전 중단
+    setTimeout(() => window.stop(), 200);
   }
 
   // === 초기화 ===
